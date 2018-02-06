@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	firebase "firebase.google.com/go"
-	"gitlab.com/shinofara/alpha/domain/chat"
+	"gitlab.com/shinofara/alpha/domain/post"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -27,27 +27,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
-	//自動でIDが振られる
-	//_, _, err = client.Collection("users").Add(ctx, map[string]interface{}{
-
-	//任意のIDを触れる
-	/*	_, err = client.Collection("users").Doc("aaa").Set(ctx, map[string]interface{}{
-			"first":  "cccccc",
-			"middle": "Mathison",
-			"last":   "Turing",
-			"born":   1912,
-			"id":     "a",
-		})
-		if err != nil {
-			log.Fatalf("Failed adding alovelace: %v", err)
-		}
-
-	*/
-
-	c := chat.New(client, ctx)
-	c.Add(&chat.Chat{
-		Message: "hoge",
-		User:    "username",
+	c := post.New(client, ctx)
+	c.Set("aaa", &post.Post{
+		Text:   "hoge",
+		UserID: 1,
 	})
 
 	iter := client.Collection("users").Documents(ctx)
@@ -63,12 +46,13 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%v<br>", doc.Data())
 	}
 
-	fmt.Fprint(w, "ok")
+	fmt.Fprintln(w, "ok")
 
-	user, err := client.Collection("users").Doc("aaa").Get(ctx)
+	user, err := c.Find("aaa")
+
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Fprintf(w, "%v", user)
+	fmt.Fprintf(w, "%+v", user)
 }
