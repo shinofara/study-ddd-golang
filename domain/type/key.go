@@ -1,5 +1,5 @@
 package _type
 
-type ChannelID uint32
-type UserID uint32
-type PostID uint32
+type ChannelID string
+type UserID string
+type PostID string
