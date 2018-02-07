@@ -1,4 +1,4 @@
-package post
+package message
 
 import (
 	"context"
@@ -11,19 +11,17 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type Post struct {
-	ID        uint32
+type Message struct {
+	ID        _type.MessageID `firestore:"-"`
 	Text      string
 	UserID    _type.UserID
 	ChannelID _type.ChannelID
 
-	User *user.User        `firestore:"-"`
-	ctx  context.Context   `firestore:"-"`
-	cli  *firestore.Client `firestore:"-"`
+	User *user.User `firestore:"-"`
 }
 
 // User 投稿したユーザ情報を取得
-func (p *Post) GetUser() (*user.User, error) {
+func (p *Message) GetUser() (*user.User, error) {
 	return user.Find(p.UserID)
 }
 
@@ -42,26 +40,30 @@ func New(cli *firestore.Client, ctx context.Context) *Repository {
 }
 
 // Set アイテムを追加する
-func (r *Repository) Set(key string, entity *Post) error {
+func (r *Repository) Set(key string, entity *Message) error {
 	_, err := r.cli.Collection(Collection).Doc(key).Set(r.ctx, entity)
 
 	return err
 }
 
 // Add アイテムを追加するKeyは自動で振られる
-func (r *Repository) Add(entity *Post) error {
-	_, _, err := r.cli.Collection(Collection).Add(r.ctx, entity)
-
-	return err
+func (r *Repository) Add(entity *Message) (*Message, error) {
+	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+	m := *entity
+	m.ID = _type.MessageID(ref.ID)
+	return &m, nil
 }
 
-func (r *Repository) Find(key string) (*Post, error) {
+func (r *Repository) Find(key string) (*Message, error) {
 	ref, err := r.cli.Collection(Collection).Doc(key).Get(r.ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	c := new(Post)
+	c := new(Message)
 	if err := internal.Convert(ref, &c); err != nil {
 		return nil, err
 	}
@@ -69,8 +71,8 @@ func (r *Repository) Find(key string) (*Post, error) {
 	return c, nil
 }
 
-func (r *Repository) FindAllByChannelID(id _type.ChannelID) ([]*Post, error) {
-	var posts []*Post
+func (r *Repository) FindAllByChannelID(id _type.ChannelID) ([]*Message, error) {
+	var posts []*Message
 
 	iter := r.cli.Collection(Collection).Documents(r.ctx)
 
@@ -83,7 +85,7 @@ func (r *Repository) FindAllByChannelID(id _type.ChannelID) ([]*Post, error) {
 			return nil, err
 		}
 
-		c := new(Post)
+		c := new(Message)
 		if err := internal.Convert(doc, &c); err != nil {
 			return nil, err
 		}

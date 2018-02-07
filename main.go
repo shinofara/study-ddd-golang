@@ -14,7 +14,7 @@ import (
 func main() {
 	http.HandleFunc("/", handler.Index)
 
-	srv := &http.Server{Addr: ":8080"}
+	srv := &http.Server{Addr: ":28080"}
 
 	// サーバはブロックするので別の goroutine で実行する
 	go func() {

@@ -5,7 +5,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"gitlab.com/shinofara/alpha/domain/internal"
-	"gitlab.com/shinofara/alpha/domain/post"
+	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/type"
 	"gitlab.com/shinofara/alpha/domain/user"
 )
@@ -13,14 +13,13 @@ import (
 const Collection = "channel"
 
 type Channel struct {
-	ID        _type.ChannelID
-	Name      string
-	OwnerID   _type.UserID
-	MemberIDs []*_type.UserID
+	ID      _type.ChannelID `firestore:"-"`
+	Name    string
+	OwnerID _type.UserID
 
-	Owner   *user.User   `firestore:"-"`
-	Posts   []*post.Post `firestore:"-"`
-	Members []*user.User `firestore:"-"`
+	Owner    *user.User         `firestore:"-"`
+	Messages []*message.Message `firestore:"-"`
+	Members  []*user.User       `firestore:"-"`
 }
 
 type Repository struct {
@@ -47,4 +46,14 @@ func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
 	}
 
 	return c, nil
+}
+
+func (r *Repository) Add(c *Channel) (*Channel, error) {
+	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, c)
+	if err != nil {
+		return nil, err
+	}
+	cc := *c
+	cc.ID = _type.ChannelID(ref.ID)
+	return &cc, nil
 }
