@@ -8,15 +8,15 @@ import (
 )
 
 type Channel struct {
-	channelRepo *channel.Repository
-	userRepo    *user.Repository
-	messageRepo *message.Repository
+	channelRepo channel.Repository
+	userRepo    user.Repository
+	messageRepo message.Repository
 }
 
 func NewChannel(
-	channelRepo *channel.Repository,
-	userRepo *user.Repository,
-	messageRepo *message.Repository) *Channel {
+	channelRepo channel.Repository,
+	userRepo user.Repository,
+	messageRepo message.Repository) *Channel {
 
 	return &Channel{
 		channelRepo: channelRepo,

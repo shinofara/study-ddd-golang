@@ -26,20 +26,20 @@ func (c *Channel) SetID(id string) {
 	c.ID = _type.ChannelID(id)
 }
 
-type Repository struct {
+type RepositoryFirestore struct {
 	ctx context.Context
 	cli *firestore.Client
 }
 
-func New(cli *firestore.Client, ctx context.Context) *Repository {
-	return &Repository{
+func New(cli *firestore.Client, ctx context.Context) Repository {
+	return &RepositoryFirestore{
 		cli: cli,
 		ctx: ctx,
 	}
 }
 
 // Find ChannelIDを元にチャンネル情報を取得
-func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
+func (r *RepositoryFirestore) Find(id _type.ChannelID) (*Channel, error) {
 	ref, err := r.cli.Collection(collection).Doc(string(id)).Get(r.ctx)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
 }
 
 // Add 新しいチャンネルを追加
-func (r *Repository) Add(c *Channel) (*Channel, error) {
+func (r *RepositoryFirestore) Add(c *Channel) (*Channel, error) {
 	ref, _, err := r.cli.Collection(collection).Add(r.ctx, c)
 	if err != nil {
 		return nil, err

@@ -6,10 +6,10 @@ import (
 
 // User メッセージを操作する為に必要な、Repositoryなどを管理
 type User struct {
-	userRepo *user.Repository
+	userRepo user.Repository
 }
 
-func NewUser(userRepo *user.Repository) *User {
+func NewUser(userRepo user.Repository) *User {
 	return &User{
 		userRepo: userRepo,
 	}
