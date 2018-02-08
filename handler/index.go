@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"gitlab.com/shinofara/alpha/domain/channel"
-	"gitlab.com/shinofara/alpha/domain/service"
 
 	firebase "firebase.google.com/go"
 	"gitlab.com/shinofara/alpha/domain/message"
@@ -36,21 +35,21 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	channelRepo := channel.New(client, ctx)
 
 	// owner作成
-	userService := service.NewUser(userRepo)
+	userService := user.NewService(userRepo)
 	u, err := userService.Register("しのはら")
 	if err != nil {
 		panic(err)
 	}
 
 	// channel新規作成
-	chService := service.NewChannel(channelRepo, userRepo, messRepo)
+	chService := channel.NewService(channelRepo, userRepo, messRepo)
 	ch, err := chService.Create("テスト", u)
 	if err != nil {
 		panic(err)
 	}
 
 	// channelに投稿
-	messService := service.NewMessage(messRepo)
+	messService := message.NewService(messRepo)
 	mess, err := messService.Post(ch.ID, u.ID, "初投稿")
 	if err != nil {
 		panic(err)

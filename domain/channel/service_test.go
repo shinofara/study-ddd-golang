@@ -1,10 +1,9 @@
-package service
+package channel
 
 import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/shinofara/alpha/domain/channel"
 	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/type"
 	"gitlab.com/shinofara/alpha/domain/user"
@@ -12,7 +11,7 @@ import (
 
 func TestChannel_InitialDisplay(t *testing.T) {
 	type fields struct {
-		channelRepo channel.Repository
+		channelRepo Repository
 		userRepo    user.Repository
 		messageRepo message.Repository
 	}
@@ -23,7 +22,7 @@ func TestChannel_InitialDisplay(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *channel.Channel
+		want    *Channel
 		wantErr bool
 	}{
 		{
@@ -34,7 +33,7 @@ func TestChannel_InitialDisplay(t *testing.T) {
 				messageRepo: &MessageRepositoryMem{},
 			},
 			args: args{},
-			want: &channel.Channel{
+			want: &Channel{
 				ID:      "test_channel_id",
 				Name:    "test_channel_name",
 				OwnerID: "test_owner_id",
@@ -56,7 +55,7 @@ func TestChannel_InitialDisplay(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Channel{
+			c := &Service{
 				channelRepo: tt.fields.channelRepo,
 				userRepo:    tt.fields.userRepo,
 				messageRepo: tt.fields.messageRepo,
@@ -75,14 +74,14 @@ func TestChannel_InitialDisplay(t *testing.T) {
 
 type ChannelRepositoryMem struct{}
 
-func (_ ChannelRepositoryMem) Find(id _type.ChannelID) (*channel.Channel, error) {
-	return &channel.Channel{
+func (_ ChannelRepositoryMem) Find(id _type.ChannelID) (*Channel, error) {
+	return &Channel{
 		ID:      "test_channel_id",
 		Name:    "test_channel_name",
 		OwnerID: "test_owner_id",
 	}, nil
 }
-func (_ ChannelRepositoryMem) Add(c *channel.Channel) (*channel.Channel, error) {
+func (_ ChannelRepositoryMem) Add(c *Channel) (*Channel, error) {
 	return nil, nil
 }
 

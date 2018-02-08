@@ -1,28 +1,25 @@
-package service
+package message
 
 import (
-	"gitlab.com/shinofara/alpha/domain/channel"
-	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/type"
 	"gitlab.com/shinofara/alpha/domain/user"
 )
 
 // Message メッセージを操作する為に必要な、Repositoryなどを管理
-type Message struct {
-	channelRepo channel.Repository
+type Service struct {
 	userRepo    user.Repository
-	messageRepo message.Repository
+	messageRepo Repository
 }
 
-func NewMessage(messageRepo message.Repository) *Message {
-	return &Message{
+func NewService(messageRepo Repository) *Service {
+	return &Service{
 		messageRepo: messageRepo,
 	}
 }
 
 // Post 指定したチャンネルにメッセージをポストする
-func (m *Message) Post(channelID _type.ChannelID, userID _type.UserID, msg string) (*message.Message, error) {
-	mess := &message.Message{
+func (m *Service) Post(channelID _type.ChannelID, userID _type.UserID, msg string) (*Message, error) {
+	mess := &Message{
 		ChannelID: channelID,
 		UserID:    userID,
 		Text:      msg,
