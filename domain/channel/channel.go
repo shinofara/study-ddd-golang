@@ -10,7 +10,7 @@ import (
 	"gitlab.com/shinofara/alpha/domain/user"
 )
 
-const Collection = "channel"
+const collection = "channel"
 
 type Channel struct {
 	ID      _type.ChannelID `firestore:"-"`
@@ -38,8 +38,9 @@ func New(cli *firestore.Client, ctx context.Context) *Repository {
 	}
 }
 
+// Find ChannelIDを元にチャンネル情報を取得
 func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
-	ref, err := r.cli.Collection(Collection).Doc(string(id)).Get(r.ctx)
+	ref, err := r.cli.Collection(collection).Doc(string(id)).Get(r.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +53,9 @@ func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
 	return c, nil
 }
 
+// Add 新しいチャンネルを追加
 func (r *Repository) Add(c *Channel) (*Channel, error) {
-	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, c)
+	ref, _, err := r.cli.Collection(collection).Add(r.ctx, c)
 	if err != nil {
 		return nil, err
 	}

@@ -1,9 +1,6 @@
 package service
 
 import (
-	"context"
-
-	"cloud.google.com/go/firestore"
 	"gitlab.com/shinofara/alpha/domain/user"
 )
 
@@ -12,9 +9,9 @@ type User struct {
 	userRepo *user.Repository
 }
 
-func NewUser(cli *firestore.Client, ctx context.Context) *User {
+func NewUser(userRepo *user.Repository) *User {
 	return &User{
-		userRepo: user.New(cli, ctx),
+		userRepo: userRepo,
 	}
 }
 

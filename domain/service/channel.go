@@ -1,9 +1,6 @@
 package service
 
 import (
-	"context"
-
-	"cloud.google.com/go/firestore"
 	"gitlab.com/shinofara/alpha/domain/channel"
 	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/type"
@@ -13,14 +10,18 @@ import (
 type Channel struct {
 	channelRepo *channel.Repository
 	userRepo    *user.Repository
-	postRepo    *message.Repository
+	messageRepo *message.Repository
 }
 
-func NewChannel(cli *firestore.Client, ctx context.Context) *Channel {
+func NewChannel(
+	channelRepo *channel.Repository,
+	userRepo *user.Repository,
+	messageRepo *message.Repository) *Channel {
+
 	return &Channel{
-		channelRepo: channel.New(cli, ctx),
-		userRepo:    user.New(cli, ctx),
-		postRepo:    message.New(cli, ctx),
+		channelRepo: channelRepo,
+		userRepo:    userRepo,
+		messageRepo: messageRepo,
 	}
 }
 
@@ -47,7 +48,7 @@ func (c *Channel) InitialDisplay(channelID _type.ChannelID) (*channel.Channel, e
 		return nil, err
 	}
 
-	ch.Messages, err = c.postRepo.FindAllByChannelID(channelID)
+	ch.Messages, err = c.messageRepo.FindAllByChannelID(channelID)
 	if err != nil {
 		return nil, err
 	}

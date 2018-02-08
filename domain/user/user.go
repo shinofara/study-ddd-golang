@@ -28,7 +28,7 @@ type Repository struct {
 	ctx context.Context
 }
 
-const Collection = "user"
+const collection = "user"
 
 func New(cli *firestore.Client, ctx context.Context) *Repository {
 	return &Repository{
@@ -38,7 +38,7 @@ func New(cli *firestore.Client, ctx context.Context) *Repository {
 }
 
 func (r *Repository) Find(id _type.UserID) (*User, error) {
-	ref, err := r.cli.Collection(Collection).Doc(string(id)).Get(r.ctx)
+	ref, err := r.cli.Collection(collection).Doc(string(id)).Get(r.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (r *Repository) Find(id _type.UserID) (*User, error) {
 
 // Add アイテムを追加するKeyは自動で振られる
 func (r *Repository) Add(entity *User) (*User, error) {
-	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, entity)
+	ref, _, err := r.cli.Collection(collection).Add(r.ctx, entity)
 	if err != nil {
 		return nil, err
 	}

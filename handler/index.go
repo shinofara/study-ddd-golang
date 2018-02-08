@@ -6,9 +6,12 @@ import (
 	"log"
 	"net/http"
 
+	"gitlab.com/shinofara/alpha/domain/channel"
 	"gitlab.com/shinofara/alpha/domain/service"
 
 	firebase "firebase.google.com/go"
+	"gitlab.com/shinofara/alpha/domain/message"
+	"gitlab.com/shinofara/alpha/domain/user"
 	"google.golang.org/api/option"
 )
 
@@ -27,22 +30,27 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
+	// action内で使用するrepositoryを初期化
+	userRepo := user.New(client, ctx)
+	messRepo := message.New(client, ctx)
+	channelRepo := channel.New(client, ctx)
+
 	// owner作成
-	userService := service.NewUser(client, ctx)
+	userService := service.NewUser(userRepo)
 	u, err := userService.Register("しのはら")
 	if err != nil {
 		panic(err)
 	}
 
 	// channel新規作成
-	chService := service.NewChannel(client, ctx)
+	chService := service.NewChannel(channelRepo, userRepo, messRepo)
 	ch, err := chService.Create("テスト", u)
 	if err != nil {
 		panic(err)
 	}
 
 	// channelに投稿
-	messService := service.NewMessage(client, ctx)
+	messService := service.NewMessage(messRepo)
 	mess, err := messService.Post(ch.ID, u.ID, "初投稿")
 	if err != nil {
 		panic(err)

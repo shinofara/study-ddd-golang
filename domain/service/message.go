@@ -1,9 +1,6 @@
 package service
 
 import (
-	"context"
-
-	"cloud.google.com/go/firestore"
 	"gitlab.com/shinofara/alpha/domain/channel"
 	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/type"
@@ -17,19 +14,18 @@ type Message struct {
 	messageRepo *message.Repository
 }
 
-func NewMessage(cli *firestore.Client, ctx context.Context) *Message {
+func NewMessage(messageRepo *message.Repository) *Message {
 	return &Message{
-		channelRepo: channel.New(cli, ctx),
-		userRepo:    user.New(cli, ctx),
-		messageRepo: message.New(cli, ctx),
+		messageRepo: messageRepo,
 	}
 }
 
-func (m *Message) Post(channelID _type.ChannelID, userID _type.UserID, text string) (*message.Message, error) {
+// Post 指定したチャンネルにメッセージをポストする
+func (m *Message) Post(channelID _type.ChannelID, userID _type.UserID, msg string) (*message.Message, error) {
 	mess := &message.Message{
 		ChannelID: channelID,
 		UserID:    userID,
-		Text:      text,
+		Text:      msg,
 	}
 
 	return m.messageRepo.Add(mess)

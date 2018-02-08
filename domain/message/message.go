@@ -28,7 +28,7 @@ type Repository struct {
 	ctx context.Context
 }
 
-const Collection = "post"
+const collection = "message"
 
 func New(cli *firestore.Client, ctx context.Context) *Repository {
 	return &Repository{
@@ -39,14 +39,14 @@ func New(cli *firestore.Client, ctx context.Context) *Repository {
 
 // Set アイテムを追加する
 func (r *Repository) Set(key string, entity *Message) error {
-	_, err := r.cli.Collection(Collection).Doc(key).Set(r.ctx, entity)
+	_, err := r.cli.Collection(collection).Doc(key).Set(r.ctx, entity)
 
 	return err
 }
 
 // Add アイテムを追加するKeyは自動で振られる
 func (r *Repository) Add(entity *Message) (*Message, error) {
-	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, entity)
+	ref, _, err := r.cli.Collection(collection).Add(r.ctx, entity)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +55,9 @@ func (r *Repository) Add(entity *Message) (*Message, error) {
 	return &m, nil
 }
 
-func (r *Repository) Find(key string) (*Message, error) {
-	ref, err := r.cli.Collection(Collection).Doc(key).Get(r.ctx)
+// Find IDを元にメッセージを取得
+func (r *Repository) Find(id _type.MessageID) (*Message, error) {
+	ref, err := r.cli.Collection(collection).Doc(string(id)).Get(r.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +70,11 @@ func (r *Repository) Find(key string) (*Message, error) {
 	return c, nil
 }
 
+// FindAllByChannelID channelIDでチャンネル内のメッセージを取得
 func (r *Repository) FindAllByChannelID(id _type.ChannelID) ([]*Message, error) {
 	var messages []*Message
 
-	m := r.cli.Collection(Collection).Where("ChannelID", "==", id).Documents(r.ctx)
+	m := r.cli.Collection(collection).Where("ChannelID", "==", id).Documents(r.ctx)
 	docs, err := m.GetAll()
 	if err != nil {
 		return nil, err
