@@ -9,8 +9,12 @@ import (
 )
 
 type User struct {
-	ID   _type.UserID
+	ID   _type.UserID `firestore:"-"`
 	Name string
+}
+
+func (u *User) SetID(id string) {
+	u.ID = _type.UserID(id)
 }
 
 func Find(id _type.UserID) (*User, error) {
@@ -40,9 +44,20 @@ func (r *Repository) Find(id _type.UserID) (*User, error) {
 	}
 
 	u := new(User)
-	if err := internal.Convert(ref, &u); err != nil {
+	if err := internal.Convert(ref, u); err != nil {
 		return nil, err
 	}
 
 	return u, nil
+}
+
+// Add アイテムを追加するKeyは自動で振られる
+func (r *Repository) Add(entity *User) (*User, error) {
+	ref, _, err := r.cli.Collection(Collection).Add(r.ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+	u := *entity
+	internal.SetID(&u, ref)
+	return &u, nil
 }

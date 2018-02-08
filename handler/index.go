@@ -9,7 +9,6 @@ import (
 	"gitlab.com/shinofara/alpha/domain/service"
 
 	firebase "firebase.google.com/go"
-	"gitlab.com/shinofara/alpha/domain/user"
 	"google.golang.org/api/option"
 )
 
@@ -28,9 +27,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Close()
 
+	// owner作成
+	userService := service.NewUser(client, ctx)
+	u, err := userService.Register("しのはら")
+	if err != nil {
+		panic(err)
+	}
+
 	// channel新規作成
 	chService := service.NewChannel(client, ctx)
-	u := &user.User{ID: "a", Name: "hoge"}
 	ch, err := chService.Create("テスト", u)
 	if err != nil {
 		panic(err)
@@ -43,37 +48,18 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Fprintf(w, "%+v", ch)
-	fmt.Fprintf(w, "%+v", mess)
+	// channel内のメッセージ全件取得
+	currentCh, err := chService.InitialDisplay(ch.ID)
+	if err != nil {
+		panic(err)
+	}
 
-	/*
-		c := post.New(client, ctx)
-		c.Set("aaa", &post.Post{
-			Text:   "hoge",
-			UserID: 1,
-		})
+	fmt.Fprint(w, "チャンネル作成結果<br>")
+	fmt.Fprintf(w, "%+v<br>", ch)
 
-		iter := client.Collection("users").Documents(ctx)
+	fmt.Fprint(w, "メッセージ投稿結果<br>")
+	fmt.Fprintf(w, "%+v<br>", mess)
 
-		for {
-			doc, err := iter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				log.Fatalf("Failed to iterate: %v<br>", err)
-			}
-			fmt.Fprintf(w, "%v<br>", doc.Data())
-		}
-
-		fmt.Fprintln(w, "ok")
-
-		user, err := c.Find("aaa")
-
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Fprintf(w, "%+v", user)
-	*/
+	fmt.Fprint(w, "チャンネルの初期表示に必要な情報取得結果<br>")
+	fmt.Fprintf(w, "%+v<br>", currentCh)
 }

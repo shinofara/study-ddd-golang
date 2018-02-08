@@ -10,6 +10,7 @@ import (
 	"gitlab.com/shinofara/alpha/domain/user"
 )
 
+// Message メッセージを操作する為に必要な、Repositoryなどを管理
 type Message struct {
 	channelRepo *channel.Repository
 	userRepo    *user.Repository

@@ -22,6 +22,10 @@ type Channel struct {
 	Members  []*user.User       `firestore:"-"`
 }
 
+func (c *Channel) SetID(id string) {
+	c.ID = _type.ChannelID(id)
+}
+
 type Repository struct {
 	ctx context.Context
 	cli *firestore.Client
@@ -41,7 +45,7 @@ func (r *Repository) Find(id _type.ChannelID) (*Channel, error) {
 	}
 
 	c := new(Channel)
-	if err := internal.Convert(ref, &c); err != nil {
+	if err := internal.Convert(ref, c); err != nil {
 		return nil, err
 	}
 
@@ -54,6 +58,6 @@ func (r *Repository) Add(c *Channel) (*Channel, error) {
 		return nil, err
 	}
 	cc := *c
-	cc.ID = _type.ChannelID(ref.ID)
+	internal.SetID(&cc, ref)
 	return &cc, nil
 }

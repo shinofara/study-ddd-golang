@@ -8,7 +8,6 @@ import (
 	"cloud.google.com/go/firestore"
 	"gitlab.com/shinofara/alpha/domain/internal"
 	"gitlab.com/shinofara/alpha/domain/type"
-	"google.golang.org/api/iterator"
 )
 
 type Message struct {
@@ -20,9 +19,8 @@ type Message struct {
 	User *user.User `firestore:"-"`
 }
 
-// User 投稿したユーザ情報を取得
-func (p *Message) GetUser() (*user.User, error) {
-	return user.Find(p.UserID)
+func (m *Message) SetID(id string) {
+	m.ID = _type.MessageID(id)
 }
 
 type Repository struct {
@@ -53,7 +51,7 @@ func (r *Repository) Add(entity *Message) (*Message, error) {
 		return nil, err
 	}
 	m := *entity
-	m.ID = _type.MessageID(ref.ID)
+	internal.SetID(&m, ref)
 	return &m, nil
 }
 
@@ -64,7 +62,7 @@ func (r *Repository) Find(key string) (*Message, error) {
 	}
 
 	c := new(Message)
-	if err := internal.Convert(ref, &c); err != nil {
+	if err := internal.Convert(ref, c); err != nil {
 		return nil, err
 	}
 
@@ -72,25 +70,21 @@ func (r *Repository) Find(key string) (*Message, error) {
 }
 
 func (r *Repository) FindAllByChannelID(id _type.ChannelID) ([]*Message, error) {
-	var posts []*Message
+	var messages []*Message
 
-	iter := r.cli.Collection(Collection).Documents(r.ctx)
-
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		c := new(Message)
-		if err := internal.Convert(doc, &c); err != nil {
-			return nil, err
-		}
-		posts = append(posts, c)
+	m := r.cli.Collection(Collection).Where("ChannelID", "==", id).Documents(r.ctx)
+	docs, err := m.GetAll()
+	if err != nil {
+		return nil, err
 	}
 
-	return posts, nil
+	for _, doc := range docs {
+		c := new(Message)
+		if err := internal.Convert(doc, c); err != nil {
+			return nil, err
+		}
+		messages = append(messages, c)
+	}
+
+	return messages, nil
 }
