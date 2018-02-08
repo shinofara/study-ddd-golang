@@ -6,11 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	"gitlab.com/shinofara/alpha/domain/channel"
-
 	firebase "firebase.google.com/go"
+	"gitlab.com/shinofara/alpha/domain/channel"
 	"gitlab.com/shinofara/alpha/domain/message"
 	"gitlab.com/shinofara/alpha/domain/user"
+	infraCh "gitlab.com/shinofara/alpha/infrastructure/firestore/channel"
+	infraMess "gitlab.com/shinofara/alpha/infrastructure/firestore/message"
+	infraUser "gitlab.com/shinofara/alpha/infrastructure/firestore/user"
 	"google.golang.org/api/option"
 )
 
@@ -30,9 +32,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	defer client.Close()
 
 	// action内で使用するrepositoryを初期化
-	userRepo := user.New(client, ctx)
-	messRepo := message.New(client, ctx)
-	channelRepo := channel.New(client, ctx)
+	userRepo := infraUser.New(client, ctx)
+	messRepo := infraMess.New(client, ctx)
+	channelRepo := infraCh.New(client, ctx)
 
 	// owner作成
 	userService := user.NewService(userRepo)
