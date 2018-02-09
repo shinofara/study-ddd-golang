@@ -1,6 +1,8 @@
 package message
 
 import (
+	"errors"
+
 	"gitlab.com/shinofara/alpha/domain/type"
 	"gitlab.com/shinofara/alpha/domain/user"
 )
@@ -18,11 +20,10 @@ func NewService(messageRepo Repository) *Service {
 }
 
 // Post 指定したチャンネルにメッセージをポストする
-func (m *Service) Post(channelID _type.ChannelID, userID _type.UserID, msg string) (*Message, error) {
-	mess := &Message{
-		ChannelID: channelID,
-		UserID:    userID,
-		Text:      msg,
+func (m *Service) Post(channelID _type.ChannelID, userID _type.UserID, msg string, spec Specification) (*Message, error) {
+	mess := NewMessage(channelID, userID, msg)
+	if ok := spec.IsSatisfiedBy(mess); !ok {
+		return nil, errors.New("メッセージ内容が仕様を満たしていません")
 	}
 
 	return m.messageRepo.Add(mess)

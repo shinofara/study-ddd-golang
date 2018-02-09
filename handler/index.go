@@ -52,7 +52,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	// channelに投稿
 	messService := message.NewService(messRepo)
-	mess, err := messService.Post(ch.ID, u.ID, "初投稿")
+	messSpec := &message.PostSpecification{MinLength: 1, MaxLength: 100}
+
+	mess, err := messService.Post(ch.ID, u.ID, "初投稿", messSpec)
 	if err != nil {
 		panic(err)
 	}
