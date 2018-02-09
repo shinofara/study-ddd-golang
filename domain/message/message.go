@@ -14,6 +14,16 @@ type Message struct {
 	User *user.User `firestore:"-"`
 }
 
+func NewMessage(channelID _type.ChannelID, userID _type.UserID, msg string) *Message {
+	mess := &Message{
+		ChannelID: channelID,
+		UserID:    userID,
+		Text:      msg,
+	}
+
+	return mess
+}
+
 func (m *Message) SetID(id string) {
 	m.ID = _type.MessageID(id)
 }
