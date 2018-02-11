@@ -1,7 +1,7 @@
 package user
 
 import (
-	"gitlab.com/shinofara/alpha/domain/type"
+	"gitlab.com/shinofara/alpha/domain/data/type"
 )
 
 type User struct {

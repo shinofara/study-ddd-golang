@@ -7,9 +7,10 @@ import (
 	"net/http"
 
 	firebase "firebase.google.com/go"
-	"gitlab.com/shinofara/alpha/domain/channel"
-	"gitlab.com/shinofara/alpha/domain/message"
-	"gitlab.com/shinofara/alpha/domain/user"
+	"gitlab.com/shinofara/alpha/domain/data/message"
+	"gitlab.com/shinofara/alpha/domain/data/user"
+	serviceCh "gitlab.com/shinofara/alpha/domain/service/channel"
+	serviceMess "gitlab.com/shinofara/alpha/domain/service/message"
 	infraCh "gitlab.com/shinofara/alpha/infrastructure/firestore/channel"
 	infraMess "gitlab.com/shinofara/alpha/infrastructure/firestore/message"
 	infraUser "gitlab.com/shinofara/alpha/infrastructure/firestore/user"
@@ -44,14 +45,14 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// channel新規作成
-	chService := channel.NewService(channelRepo, userRepo, messRepo)
+	chService := serviceCh.New(channelRepo, userRepo, messRepo)
 	ch, err := chService.Create("テスト", u)
 	if err != nil {
 		panic(err)
 	}
 
 	// channelに投稿
-	messService := message.NewService(messRepo)
+	messService := serviceMess.New(messRepo)
 	messSpec := &message.PostSpecification{MinLength: 1, MaxLength: 100}
 
 	mess, err := messService.Post(ch.ID, u.ID, "初投稿", messSpec)

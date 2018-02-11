@@ -1,12 +1,11 @@
 package internal
 
-import "cloud.google.com/go/firestore"
+import (
+	"cloud.google.com/go/firestore"
+	"gitlab.com/shinofara/alpha/domain"
+)
 
-type Entity interface {
-	SetID(id string)
-}
-
-func Convert(snapshot *firestore.DocumentSnapshot, obj Entity) error {
+func Convert(snapshot *firestore.DocumentSnapshot, obj domain.Entity) error {
 	if err := snapshot.DataTo(obj); err != nil {
 		return err
 	}
@@ -16,6 +15,6 @@ func Convert(snapshot *firestore.DocumentSnapshot, obj Entity) error {
 	return nil
 }
 
-func SetID(obj Entity, ref *firestore.DocumentRef) {
+func SetID(obj domain.Entity, ref *firestore.DocumentRef) {
 	obj.SetID(ref.ID)
 }

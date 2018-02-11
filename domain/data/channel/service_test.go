@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/shinofara/alpha/domain/message"
-	"gitlab.com/shinofara/alpha/domain/type"
-	"gitlab.com/shinofara/alpha/domain/user"
+	"gitlab.com/shinofara/alpha/domain/data/message"
+	"gitlab.com/shinofara/alpha/domain/data/type"
+	"gitlab.com/shinofara/alpha/domain/data/user"
 )
 
 func TestChannel_InitialDisplay(t *testing.T) {

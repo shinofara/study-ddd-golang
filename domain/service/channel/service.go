@@ -1,19 +1,20 @@
 package channel
 
 import (
-	"gitlab.com/shinofara/alpha/domain/message"
-	"gitlab.com/shinofara/alpha/domain/type"
-	"gitlab.com/shinofara/alpha/domain/user"
+	"gitlab.com/shinofara/alpha/domain/data/channel"
+	"gitlab.com/shinofara/alpha/domain/data/message"
+	"gitlab.com/shinofara/alpha/domain/data/type"
+	"gitlab.com/shinofara/alpha/domain/data/user"
 )
 
 type Service struct {
-	channelRepo Repository
+	channelRepo channel.Repository
 	userRepo    user.Repository
 	messageRepo message.Repository
 }
 
-func NewService(
-	channelRepo Repository,
+func New(
+	channelRepo channel.Repository,
 	userRepo user.Repository,
 	messageRepo message.Repository) *Service {
 
@@ -25,8 +26,8 @@ func NewService(
 }
 
 // Create 新しいチャンネルを作成
-func (c *Service) Create(name string, owner *user.User) (*Channel, error) {
-	ch := &Channel{
+func (c *Service) Create(name string, owner *user.User) (*channel.Channel, error) {
+	ch := &channel.Channel{
 		Name:    name,
 		OwnerID: owner.ID,
 		Owner:   owner,
@@ -36,7 +37,7 @@ func (c *Service) Create(name string, owner *user.User) (*Channel, error) {
 }
 
 // InitialDisplay channelIDを元に、チャンネル表示に必要な情報をChannel Entityに集約して返す
-func (c *Service) InitialDisplay(channelID _type.ChannelID) (*Channel, error) {
+func (c *Service) InitialDisplay(channelID _type.ChannelID) (*channel.Channel, error) {
 	ch, err := c.channelRepo.Find(channelID)
 	if err != nil {
 		return nil, err
