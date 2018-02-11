@@ -1,6 +1,6 @@
 package message
 
-import "gitlab.com/shinofara/alpha/domain/type"
+import "gitlab.com/shinofara/alpha/domain/data/type"
 
 type Repository interface {
 	Set(key string, entity *Message) error

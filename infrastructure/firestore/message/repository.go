@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
-	"gitlab.com/shinofara/alpha/domain/message"
-	"gitlab.com/shinofara/alpha/domain/type"
+	"gitlab.com/shinofara/alpha/domain/data/message"
+	"gitlab.com/shinofara/alpha/domain/data/type"
 	"gitlab.com/shinofara/alpha/infrastructure/firestore/internal"
 )
 

@@ -1,9 +1,9 @@
 package channel
 
 import (
-	"gitlab.com/shinofara/alpha/domain/message"
-	"gitlab.com/shinofara/alpha/domain/type"
-	"gitlab.com/shinofara/alpha/domain/user"
+	"gitlab.com/shinofara/alpha/domain/data/message"
+	"gitlab.com/shinofara/alpha/domain/data/type"
+	"gitlab.com/shinofara/alpha/domain/data/user"
 )
 
 type Channel struct {
@@ -13,7 +13,7 @@ type Channel struct {
 
 	Owner    *user.User         `firestore:"-"`
 	Messages []*message.Message `firestore:"-"`
-	Members  []*user.User
+	Members  []*user.User       `firestore:"-"`
 }
 
 func NewChannel(ownerID _type.UserID, name string) *Channel {

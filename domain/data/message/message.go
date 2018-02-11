@@ -1,8 +1,8 @@
 package message
 
 import (
-	"gitlab.com/shinofara/alpha/domain/type"
-	"gitlab.com/shinofara/alpha/domain/user"
+	"gitlab.com/shinofara/alpha/domain/data/type"
+	"gitlab.com/shinofara/alpha/domain/data/user"
 )
 
 type Message struct {
