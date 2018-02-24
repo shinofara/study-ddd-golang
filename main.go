@@ -9,10 +9,15 @@ import (
 	"syscall"
 
 	"gitlab.com/shinofara/alpha/handler"
+	"gitlab.com/shinofara/alpha/infrastructure/locator"
 )
 
 func main() {
-	http.HandleFunc("/", handler.Index)
+
+	l := locator.New()
+	l.SetStorage()
+
+	http.HandleFunc("/", handler.Index(l.ServiceLocator()))
 
 	srv := &http.Server{Addr: ":28080"}
 
